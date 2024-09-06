@@ -1,0 +1,10 @@
+# docker-compose.yml
+version: '3.8'
+
+services:
+  k6:
+    image: grafana/k6:latest
+    volumes:
+      - ./scripts:/scripts
+    entrypoint: ""
+    command: ["k6", "run", "/scripts/test.js"]
