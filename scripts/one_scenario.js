@@ -85,51 +85,50 @@ export default function () {
 
     const createRoomSocket = ws.connect(WS_BASE_URL + "/location/share", createWsOption, function (socket) {
         socket.on('open', function () {
+            console.log('Create Room WebSocket opened.');
             socket.send(JSON.stringify({
                 "type": 0,
                 "presentLat": 37.561949,
                 "presentLng": 127.038485,
                 "destinationDistance": 300
             }));
-        });
 
-        socket.on('close', function () {
-            console.log('연결이 종료되었습니다.');
-        });
-
-        // socket.on('message', function (msg) {
-        // console.log(`Received message: ${msg}`); // 메시지를 수신했을 때 로그 추가
-        //     if (msg) {
-        //         const response = JSON.parse(msg);
-        //         if (response.roomSeq === roomSeq) {
-        //             const endTime = Date.now();
-        //             durationTime = endTime - startTime;
-        //             console.log(`A가 메시지를 받는 데 걸린 시간: ${durationTime} ms`);
-        //         }
-        //     }
-        // });
-
-        
-    });
-
-    const joinWsOption = {
-        headers: {
-            "Authorization": joinMemberAccessToken
-        }
-    };
-
-    const joinRoomSocket = ws.connect(WS_BASE_URL + "/location/share", joinWsOption, function (socket) {
-        console.log("join member~!");
-        socket.on('open', function () {
-            startTime = Date.now();
-            socket.send(JSON.stringify({
-                "type": 1,
-                "presentLat": 37.561949,
-                "presentLng": 127.038485,
-                "destinationDistance": 200
-            }));
+            socket.on('message', function (msg) {
+                console.log(`Received message: ${msg}`); // 메시지를 수신했을 때 로그 추가
+                if (msg) {
+                    const response = JSON.parse(msg);
+                    if (response.roomSeq === roomSeq) {
+                        const endTime = Date.now();
+                        durationTime = endTime - startTime;
+                        console.log(`A가 메시지를 받는 데 걸린 시간: ${durationTime} ms`);
+                    }
+                }
+            });
+            // Join Room WebSocket 연결을 시도합니다.
+            joinRoom();
         });
     });
+    
+    function joinRoom() {
+        const joinWsOption = {
+            headers: {
+                "Authorization": joinMemberAccessToken
+            }
+        };
+    
+        const joinRoomSocket = ws.connect(WS_BASE_URL + "/location/share", joinWsOption, function (socket) {
+            console.log("Join member WebSocket opened.");
+            socket.on('open', function () {
+                startTime = Date.now();
+                socket.send(JSON.stringify({
+                    "type": 1,
+                    "presentLat": 37.561949,
+                    "presentLng": 127.038485,
+                    "destinationDistance": 200
+                }));
+            });
+        });
+    }
 
     // Room exit for both members
     let createMemberexitRoomRes = http.post(`${HTTP_BASE_URL}/rooms/exit`, JSON.stringify({

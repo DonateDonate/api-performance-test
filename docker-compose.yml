@@ -9,5 +9,5 @@ services:
       - ./scripts:/scripts
     entrypoint: ""
     #command: ["k6", "run", "/scripts/signLoginScenario.js"]
-    #command: ["k6", "run", "/scripts/test.js"]
-    command: ["k6", "run", "/scripts/one_scenario.js"]
+    command: ["k6", "run", "/scripts/test.js"]
+    #command: ["k6", "run", "/scripts/one_scenario.js"]
